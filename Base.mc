@@ -6,6 +6,7 @@ has 'maintitle' => (default => 'WAE Group');
 <%augment wrap>
   <html>
     <head>
+      <link rel="stylesheet" href="static/css/base.css">
       <link rel="stylesheet" href="static/css/style.css">
       <script src="/static/js/ckeditor/ckeditor.js"></script>
 % $.Defer {{
@@ -13,8 +14,9 @@ has 'maintitle' => (default => 'WAE Group');
 % }}
     </head>
     <body>
+      <& shared/header.mi, grp => $.grp &>
       <% inner() %>
-      <& footer.mi, grp => $.grp &>
+      <& shared/footer.mi, grp => $.grp &>
     </body>
   </html>
 </%augment>

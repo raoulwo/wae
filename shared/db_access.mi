@@ -1,0 +1,51 @@
+<%class>
+has 'action'; # Operation: 'create', 'read', 'update' or 'delete'
+has 'params'; # Additional parameters for the operation (Hash)
+</%class>
+
+<%init>
+my $dbh = Ws24::DBI->dbh(); # Database handle
+
+my $sth;     # Statement handle
+my $results; # Query results
+
+if ($.action eq "create") {
+    # Insert a new document.
+    $sth = $dbh->prepare("INSERT INTO group15_documents (title, content, fk_parent_id) VALUES (?, ?, ?)");
+    $sth->execute($.params->{title}, $.params->{content}, $.params->{fk_parent_id} || undef);
+
+    # Return the id of the last inserted record.
+    return $sth->{mysql_insertid};
+} elsif ($.action eq "read") {
+    # Read all documents (or document by id).
+    my $query = "SELECT document_id, title, content, created_at, fk_parent_id FROM group15_documents";
+
+    # Optionally add the document_id if passed.
+    my @bind_values;
+    if ($.params->{document_id}) {
+        $query .= " WHERE document_id = ?";
+        push @bind_values, $.params->{document_id};
+    }
+
+    $sth = $dbh->prepare($query);
+    $sth->execute(@bind_values);
+
+    # Return an array reference that contains one reference per row.
+    return $sth->fetchall_arrayref({});
+} elsif ($.action eq "update") {
+    # Update an existing document.
+    $sth = $dbh->prepare('UPDATE group15_documents SET title = ?, content = ?, fk_parent_id = ? WHERE document_id = ?');
+    $sth->execute($.params->{title}, $.params->{content}, $.params->{fk_parent_id} || undef, $.params->{document_id});
+
+    # Return the number of updated rows.
+    return $sth->rows;
+} elsif ($.action eq "delete") {
+    # Delete an existing document.
+    $sth = $dbh->prepare('DELETE FROM group15_documents WHERE document_id = ?');
+    $sth->execute($.params->{document_id});
+
+    # Return the number of deleted rows.
+    $results = $sth->rows;
+}
+
+</%init>

@@ -87,41 +87,57 @@ my $cgi = new CGI;
 my $msg = "Welcome to the WCM content editor.";
 my %docTitleAndIds = ('0', 'top level document');
 
-my $sth = $dbh->prepare("SELECT document_id, title from group15_documents");
-$sth->execute();
-while (my $res = $sth->fetchrow_hashref()) {
-  $docTitleAndIds{$res->{document_id}} = $res->{title};
+# Fetch all documents.
+my $documents = $m->comp("/wae15/shared/db_access.mi",
+  action => "read",
+  params => {}
+);
+foreach my $document (@$documents) {
+  $docTitleAndIds{$document->{document_id}} = $document->{title};
 }
 
 if ($.save) {
 # Speichern wurde gedrückt...
   if ($.insert == 1) {
   # Datensatz aus Formularfeldern in Datenbank einfügen
-    my $sth = $dbh->prepare("INSERT INTO group15_documents (document_id,content,title,fk_parent_id,created_at) values (?,?,?,?,NOW())");
-    $sth->execute($.document_id,$.content,$.title,(($.fk_parent_id > 0)?$.fk_parent_id:0));
-    $msg = "Datensatz ". $.document_id ." neu in DB aufgenommen.".$sth->rows();
+    my $new_document_id = $m->comp("/wae15/shared/db_access.mi",
+      action => "create",
+      params => {
+        title => $.title,
+        content => $.content,
+        fk_parent_id => $.fk_parent_id || undef
+      }
+    );
+    $msg = "Datensatz " . $new_document_id . " neu in DB aufgenommen.";
+
+    # TODO(raoul): Maybe redirect to document view after creating it?
+
 #    $.insert(0);
   } else {
   # Datensatz in Datenbank ändern
     my $sth = $dbh->prepare("UPDATE group15_documents SET content = ?, title = ?, fk_parent_id = ? WHERE document_id = ?");
-    $sth->execute($.content,$.title,$.fk_parent_id,$.document_id);
+    $sth->execute($.content,$.title,$.fk_parent_id || undef,$.document_id);
     $msg = "Datensatz " . $.document_id ." in DB ver&auml;ndert.".$sth->rows();
   }
 } elsif ($.document_id) {
 # id erkannt, daten aus Datenbank lesen
-  my $sth = $dbh->prepare("SELECT document_id, title, content, created_at, fk_parent_id, from group15_documents WHERE document_id = ?");
+  my $sth = $dbh->prepare("SELECT document_id, title, content, created_at, fk_parent_id from group15_documents WHERE document_id = ?");
   $sth->execute($.document_id);
   my $res = $sth->fetchrow_hashref();
   $.content($res->{content} || $.content);
   $.title($res->{title});
   $.fk_parent_id($res->{fk_parent_id});
   $msg = "Datensatz " . $.document_id . " aus DB gelesen.".((defined($res) && scalar(keys(%$res)))?1:0);
+
+  # TODO(raoul): Maybe redirect to document view after updating it?
+
 } else {
 # keine ID, neues Dokument erstellen
-  my $sth = $dbh->prepare("SELECT max(document_id) as max_document_id FROM group15_documents");
-  $sth->execute();
-  my $res = $sth->fetchrow_hashref();
-  $.document_id($res->{max_document_id}+1);
+  #my $sth = $dbh->prepare("SELECT max(document_id) as max_document_id FROM group15_documents");
+  #$sth->execute();
+  #my $res = $sth->fetchrow_hashref();
+  #$.document_id($res->{max_document_id}+1);
   $.insert(1);
 }
+
 </%init>
