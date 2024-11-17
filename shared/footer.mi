@@ -1,4 +1,9 @@
 <%class>
 has 'grp';
 </%class>
-<div>FOOTER: This page by WAE group <% $.grp %>;</div>
+
+<div class="mt-auto bg-body-tertiary">
+    <div class="container-fluid d-flex justify-content-center">
+        <p class="my-3">Created with Love by WAE15</p>
+    </div>
+</div>

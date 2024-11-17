@@ -1,0 +1,19 @@
+<%class>
+has 'children';
+</%class>
+
+<%init>
+</%init>
+
+<%perl>
+# my $query_string = $.document_id ? "?document_id=" . $.document_id : undef;
+</%perl>
+
+<ul>
+% foreach my $child (@{$self->children}) {
+    <li><a href="/wae15/documents?document_id=<% $child->{"document_id"} %>"><% $child->{"title"} %></a></li>
+    <& /wae15/shared/third_level_documents.mi,
+        children => $child->{"children"}
+    &>
+% }
+</ul>

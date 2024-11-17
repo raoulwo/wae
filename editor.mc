@@ -7,76 +7,6 @@
   has 'insert' => (default => 0);
 </%class>
 
-<h2>
-% if (defined($.document_id) && $.insert == 0) {
-  Dokument <% $.document_id %> editieren
-% } else {
-  Neues Dokument anlegen
-% }
-</h2>
-
-% if (length($msg)) {
-  <p style="color:red;font-size:10px;"><% $msg %></p>
-% }
-
-<form name="editform" method="post" enctype="application/x-www-form-urlencoded">
-  <input type="hidden" name="document_id" value="<% $.document_id %>">
-  <input type="hidden" name="insert" value="<% $.insert %>">
-
-  <table width="100%" cellspacing=1 cellpadding=4 border=0>
-    <colgroup>
-      <col align="right" valign="top">
-      <col align="left">
-    </colgroup>
-
-    <tr>
-      <td>Titel:</td>
-      <td><input type="text" name="title" value="<% $.title %>" size="50" /></td> <!-- Filter |h ?? -->
-    </tr>
-
-    <tr>
-      <td>Parent-ID:</td>
-      <td>
-      <%doc>
-      <%  $cgi->popup_menu(-name      =>'fk_parent_id',
-	  -values    => [ sort keys %docTitleAndIds ],
-	  -default   => $.fk_parent_id,
-	  -labels    => \%docTitleAndIds)
-      %> aktuell: <% $docTitleAndIds{$.fk_parent_id} %>
-      </%doc>
-      <input type="text" name="fk_parent_id" value="<% $.fk_parent_id %>" size="3" />
-
-      </td>
-    </tr>
-
-    <tr>
-      <td align=left colspan=2>
-	<textarea name="content" id="content"><% $.content %></textarea>
-	<script>
-	  // Replace the <textarea id="content"> with a CKEditor instance, using default configuration.
-	  CKEDITOR.replace('content', {
-	    width: '560px',
-	    height: '400px',
-	  });
-	</script>
-	<br>
-      </td>
-    </tr>
-
-    <tr>
-      <td colspan=2 align=center>
-	<br>
-	<input type="submit" value="&Auml;nderungen speichern" name="save">
-	&nbsp;&nbsp;&nbsp;
-	<input type="reset" value="&Auml;nderungen verwerfen" name="Cancel"> <!-- onClick="window.close()" -->
-	<br>
-	<br>
-      </td>
-    </tr>
-  </table>
-
-</form>
-
 <%init>
 use Data::Dumper;
 use CGI;
@@ -141,3 +71,61 @@ if ($.save) {
 }
 
 </%init>
+
+<%perl>
+my $page_title = "Neues Dokument anlegen";
+if (defined($.document_id) && $.insert == 0) {
+  $page_title = "Dokument " . $.document_id . " editieren";
+}
+</%perl>
+
+<div class="d-flex flex-row">
+  <section class="me-5" style="width: 768px;">
+    <h2><% $page_title %></h2>
+
+% if (length($msg)) {
+  <p style="color:red;font-size:10px;"><% $msg %></p>
+% }
+
+    <form name="editform" method="post" enctype="application/x-www-form-urlencoded">
+      <input type="hidden" name="document_id" value="<% $.document_id %>">
+      <input type="hidden" name="insert" value="<% $.insert %>">
+
+      <div class="mb-3">
+	<label for="title">Titel</label>
+	<input type="text" name="title" value="<% $.title %>" size="50">
+      </div>
+
+      <div class="mb-3">
+        <label for="fk_parent_id">Parent ID</label>
+	<%  $cgi->popup_menu(
+	    -name      =>'fk_parent_id',
+	    -values    => [ sort keys %docTitleAndIds ],
+	    -default   => $.fk_parent_id,
+	    -labels    => \%docTitleAndIds)
+	%>
+	<span>Aktuell: <% $docTitleAndIds{$.fk_parent_id} %></span>
+      </div>
+
+      <textarea name="content" id="content"><% $.content %></textarea>
+      <script>
+	// Replace the <textarea id="content"> with a CKEditor instance, using default configuration.
+	CKEDITOR.replace('content', {
+	  width: '560px',
+	  height: '400px',
+	});
+      </script>
+
+      <div class="d-flex justify-content-start mt-3">
+	<input class="me-3" type="submit" value="&Auml;nderungen speichern" name="save">
+	<input type="reset" value="&Auml;nderungen verwerfen" name="Cancel"> <!-- onClick="window.close()" -->
+      </div>
+
+    </form>
+
+  </section>
+  <section class="flex-grow-1">
+    <h2>Document Preview</h2>
+    <p>TODO(raoul): Implement the document preview</p>
+  </section>
+</div>
