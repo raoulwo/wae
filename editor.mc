@@ -27,9 +27,9 @@ foreach my $document (@$documents) {
 }
 
 if ($.save) {
-# Speichern wurde gedrückt...
+# Speichern wurde gedrï¿½ckt...
   if ($.insert == 1) {
-  # Datensatz aus Formularfeldern in Datenbank einfügen
+  # Datensatz aus Formularfeldern in Datenbank einfï¿½gen
     my $new_document_id = $m->comp("/wae15/shared/db_access.mi",
       action => "create",
       params => {
@@ -40,14 +40,19 @@ if ($.save) {
     );
     $msg = "Datensatz " . $new_document_id . " neu in DB aufgenommen.";
 
-    # TODO(raoul): Maybe redirect to document view after creating it?
+    # Redirect to the article after creating it.
+    $m->redirect('/wae15/documents?document_id='. $new_document_id);
 
 #    $.insert(0);
   } else {
-  # Datensatz in Datenbank ändern
+  # Datensatz in Datenbank ï¿½ndern
     my $sth = $dbh->prepare("UPDATE group15_documents SET content = ?, title = ?, fk_parent_id = ? WHERE document_id = ?");
     $sth->execute($.content,$.title,$.fk_parent_id || undef,$.document_id);
     $msg = "Datensatz " . $.document_id ." in DB ver&auml;ndert.".$sth->rows();
+
+    # Redirect to the article after updating it.
+    # Note: This is commented out because it redirects instantly after saving.
+    #$m->redirect('/wae15/documents?document_id='. $.document_id);
   }
 } elsif ($.document_id) {
 # id erkannt, daten aus Datenbank lesen
@@ -58,8 +63,6 @@ if ($.save) {
   $.title($res->{title});
   $.fk_parent_id($res->{fk_parent_id});
   $msg = "Datensatz " . $.document_id . " aus DB gelesen.".((defined($res) && scalar(keys(%$res)))?1:0);
-
-  # TODO(raoul): Maybe redirect to document view after updating it?
 
 } else {
 # keine ID, neues Dokument erstellen
@@ -79,53 +82,63 @@ if (defined($.document_id) && $.insert == 0) {
 }
 </%perl>
 
-<div class="d-flex flex-row">
+<div class="container col-5 d-flex justify-content-center">
   <section class="me-5" style="width: 768px;">
-    <h2><% $page_title %></h2>
+    <h2 class="text-center"><% $page_title %></h2>
 
 % if (length($msg)) {
-  <p style="color:red;font-size:10px;"><% $msg %></p>
+  <div class="alert alert-info" role="alert">
+    <% $msg %>
+  </div>
 % }
 
     <form name="editform" method="post" enctype="application/x-www-form-urlencoded">
       <input type="hidden" name="document_id" value="<% $.document_id %>">
       <input type="hidden" name="insert" value="<% $.insert %>">
 
-      <div class="mb-3">
-	<label for="title">Titel</label>
-	<input type="text" name="title" value="<% $.title %>" size="50">
+      <div class="form-group mb-3">
+        <label for="title">Titel</label>
+        <input class="form-control" type="text" name="title" value="<% $.title %>" size="50">
       </div>
 
-      <div class="mb-3">
+      <div class="form-group mb-3">
         <label for="fk_parent_id">Parent ID</label>
-	<%  $cgi->popup_menu(
-	    -name      =>'fk_parent_id',
-	    -values    => [ sort keys %docTitleAndIds ],
-	    -default   => $.fk_parent_id,
-	    -labels    => \%docTitleAndIds)
-	%>
-	<span>Aktuell: <% $docTitleAndIds{$.fk_parent_id} %></span>
+          <%  $cgi->popup_menu(
+              -name      =>'fk_parent_id',
+              -values    => [ sort keys %docTitleAndIds ],
+              -default   => $.fk_parent_id,
+              -labels    => \%docTitleAndIds,
+              -class     => 'form-control'),
+          %>
+      </div class>
+% if (length($docTitleAndIds{$.fk_parent_id})) {
+  <div class="form-group mb-3 alert alert-info" role="alert">
+        <span>Aktuell: <% $docTitleAndIds{$.fk_parent_id} %></span>
+  </div>
+% } else {
+  <div class="alert alert-info" role="alert">
+    <span>Neues Dokument wird unter dem aktuellen Dokument (Parent ID) angelegt.</span>
+  </div>
+% }
+      <div class="form-group mb-3">
+        <textarea name="content" id="content"><% $.content %></textarea>
       </div>
-
-      <textarea name="content" id="content"><% $.content %></textarea>
       <script>
-	// Replace the <textarea id="content"> with a CKEditor instance, using default configuration.
-	CKEDITOR.replace('content', {
-	  width: '560px',
-	  height: '400px',
-	});
+        // Replace the <textarea id="content"> with a CKEditor instance, using default configuration.
+        CKEDITOR.replace('content', {
+          width: '100%',
+          height: '400px',
+        });
       </script>
-
-      <div class="d-flex justify-content-start mt-3">
-	<input class="me-3" type="submit" value="&Auml;nderungen speichern" name="save">
-	<input type="reset" value="&Auml;nderungen verwerfen" name="Cancel"> <!-- onClick="window.close()" -->
+      <div class="form-group col-md-8 mb-3 mx-auto">
+        <div class="row mb-1">
+        <input class="btn btn-primary" type="submit" value="&Auml;nderungen speichern" name="save">
+        </div>
+        <div class="row">
+          <input class="btn btn-danger" type="reset" value="&Auml;nderungen verwerfen" name="Cancel"> <!-- onClick="window.close()" -->
+        </div>
       </div>
-
     </form>
 
-  </section>
-  <section class="flex-grow-1">
-    <h2>Document Preview</h2>
-    <p>TODO(raoul): Implement the document preview</p>
   </section>
 </div>
