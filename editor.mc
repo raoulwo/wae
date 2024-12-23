@@ -8,6 +8,11 @@
 </%class>
 
 <%init>
+# Only allow editing when logged in
+if( !defined $m->session->{user_id} ) {
+  $m->redirect('/wae15/index');
+}
+
 use Data::Dumper;
 use CGI;
 
