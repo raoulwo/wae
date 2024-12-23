@@ -1,0 +1,36 @@
+<%class>
+  has 'username';
+  has 'password';
+</%class>
+
+<!-- <div id="contents">
+        <div id="leftcontainer">
+-->
+                <h2 class="mainheading">
+                        Please log in:
+                </h2>
+                <form name="input" id="loginform" action="login" method="post">
+                        Username: <input type="text" name="username" required="required"><br><br>
+                        Password: <input type="password" name="password" required="required" minlength="3">
+                        <br>
+% if ($.username && $.password) {
+                        <br>
+                        <strong>Wrong username or password!</strong>
+                        <br>
+% }
+                        <br>
+                        <input type="submit" value="login">
+                </form>
+<script>
+$('input:text, input:password')
+  .button()
+  .css({
+        'font' : 'inherit',
+        'color' : 'inherit',
+        'text-align' : 'left',
+        'outline' : 'none',
+        'cursor' : 'text'
+  });
+$('input:submit').button();
+$("#loginform").validate();
+</script>

@@ -16,6 +16,13 @@
           <li class="nav-item">
             <a class="nav-link" href="/wae15/editor">Editor</a>
           </li>
+          <li class="nav-item">
+% if( defined $m->session->{user_id} ) {
+      <a class="nav-link" href="/wae15/shared/logout">Logout</a>
+% } else {
+      <a class="nav-link" href="/wae15/shared/login">Login</a>
+% }
+          </li>
         </ul>
       </div>
     </div>
