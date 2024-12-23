@@ -45,7 +45,6 @@ foreach my $document (values %document_hierarchy) {
 
 </%init>
 
-<p>TODO(raoul): Implement login and session logic so that only authorized users can edit documents.</p>
 <p>TODO(raoul): We've got the document hierarchy, now we just need to make it functional and maybe pretty.</p>
 <ul>
 % foreach my $document (@top_level_documents) {
