@@ -1,6 +1,7 @@
 <%class>
   has 'username';
   has 'password';
+  has 'refresh' => (default => 1);
 </%class>
 
 % if (defined $m->session->{user_id} && $m->session->{user_id}) {
@@ -17,5 +18,8 @@
 
   if (defined $user->{'user_id'} && $user->{'user_id'} > 0) {
     $m->session->{user_id} = $user->{'user_id'};
+    if($.refresh) {
+        $m->redirect('/wae15/shared/login?refresh='. 0);
+    }
   }
 </%init>
