@@ -3,44 +3,41 @@
   has 'password';
 </%class>
 
-<!-- <div id="contents">
-        <div id="leftcontainer">
--->
-<div class="container col-5 d-flex justify-content-center">
-        <h2 class="mainheading">
-                Please Log In:
-        </h2>
-</div>
-<div class="container col-5 justify-content-center">
-        <form name="input" id="loginform" action="login" method="post">
-                <div class="form-group col-md-8 mb-3 mx-auto">
-                        <label for="username">Username:</label>
-                        <input class="form-control" type="text" name="username" required="required">
-                </div>
-                <div class="form-group col-md-8 mb-3 mx-auto">
-                        <label for="password">Password:</label>
-                        <input class="form-control" type="password" name="password" required="required" minlength="3">
-                </div>
+<div class="col-md-12 align-items-center justify-content-center d-flex">
+  <div class="col-5">
+    <h2 class="mainheading text-center">
+      Please Log In:
+    </h2>
+    <form name="input" id="loginform" action="login" method="post">
+      <div class="form-group col-md-8 mb-3 mx-auto">
+        <label for="username">Username:</label>
+        <input class="form-control" type="text" name="username" required="required">
+      </div>
+      <div class="form-group col-md-8 mb-3 mx-auto">
+        <label for="password">Password:</label>
+        <input class="form-control" type="password" name="password" required="required" minlength="3">
+      </div>
 % if ($.username && $.password) {
-                 <div class="form-group col-md-8 mb-3 mx-auto alert alert-danger" role="alert">
-                        <strong>Wrong username or password!</strong>
-                </div>
+      <div class="form-group col-md-8 mb-3 mx-auto alert alert-danger" role="alert">
+        <strong>Wrong username or password!</strong>
+      </div>
 % }
-                <div class="form-group row">
-                        <input class="btn btn-primary col-md-8 mb-3 mx-auto" type="submit" value="Log In">
-                </div>
-        </form>
+      <div class="form-group col-md-8 mb-3 mx-auto">
+        <input class="btn btn-primary w-100" type="submit" value="Log In">
+      </div>
+    </form>
+  </div>
 </div>
 
 <script>
 $('input:text, input:password')
   .button()
   .css({
-        'font' : 'inherit',
-        'color' : 'inherit',
-        'text-align' : 'left',
-        'outline' : 'none',
-        'cursor' : 'text'
+    'font' : 'inherit',
+    'color' : 'inherit',
+    'text-align' : 'left',
+    'outline' : 'none',
+    'cursor' : 'text'
   });
 $('input:submit').button();
 $("#loginform").validate();
