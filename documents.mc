@@ -23,6 +23,8 @@ if ($.delete) {
             document_id => $.document_id
         }
     );
+    # Redirect to the main page after deletion
+    $m->redirect('/wae15/index');
 }
 </%init>
 
@@ -32,9 +34,16 @@ if ($.delete) {
 <h1><% $document->{"created_at"} %></h1>
 <h1><% $document->{"content"} %></h1>
 
-<a href="/wae15/editor?document_id=<% $document->{"document_id"} %>">Edit document</a>
 
-<form name="deleteform" method="post">
-    <input type="hidden" name="document_id" value="<% $.document_id %>">
-    <input type="submit" name="delete" value="Delete document">
-</form>
+% if( defined $m->session->{user_id} ) {
+  <div class="col-md-2">
+    <a class="btn btn-primary active w-100 mb-3" href="/wae15/editor?document_id=<% $document->{"document_id"} %>">Edit document</a>
+
+    <form name="deleteform" method="post">
+        <input type="hidden" name="document_id" value="<% $.document_id %>">
+        <input type="submit" name="delete" value="Delete document" class="btn btn-dark w-100">
+    </form>
+  </div>
+% } else {
+  <p>You need to be logged in to edit or delete documents.</p>
+% }
