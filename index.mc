@@ -43,6 +43,9 @@ foreach my $document (values %document_hierarchy) {
   }
 }
 
+# Sort top-level documents alphabetically by title
+@top_level_documents = sort { lc($a->{"title"}) cmp lc($b->{"title"}) } @top_level_documents;
+
 </%init>
 
 <div class="d-flex">
@@ -50,11 +53,15 @@ foreach my $document (values %document_hierarchy) {
     <div class="sidebar-sticky">
       <ul class="nav flex-column nav-pills">
 % foreach my $document (@top_level_documents) {
-  <li class="nav-item">
-      <a class="nav-link" href="/wae15/documents?document_id=<% $document->{"document_id"} %>"><% $document->{"title"} %></a>
+  <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><% $document->{"title"} %></a>
+    <div class="dropdown-menu">
+      <a class="dropdown-item" href="/wae15/documents?document_id=<% $document->{"document_id"} %>"><% $document->{"title"} %></a>
+      <div class="dropdown-divider"></div>
       <& /wae15/shared/second_level_documents.mi,
         children => $document->{"children"}
       &>
+    </div>
   </li>
 % }
       </ul>
@@ -65,3 +72,7 @@ foreach my $document (values %document_hierarchy) {
     <p>TODO(raoul): We've got the document hierarchy, now we just need to make it functional and maybe pretty.</p>
   </main>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>

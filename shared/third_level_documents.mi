@@ -11,6 +11,6 @@ has 'children';
 
 <ul>
 % foreach my $child (@{$self->children}) {
-    <li><a href="/wae15/documents?document_id=<% $child->{"document_id"} %>"><% $child->{"title"} %></a></li>
+    <a class="dropdown-item pl-4" href="/wae15/documents?document_id=<% $child->{"document_id"} %>"><% $child->{"title"} %></a>
 % }
 </ul>
