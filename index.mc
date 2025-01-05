@@ -45,12 +45,23 @@ foreach my $document (values %document_hierarchy) {
 
 </%init>
 
-<p>TODO(raoul): We've got the document hierarchy, now we just need to make it functional and maybe pretty.</p>
-<ul>
+<div class="d-flex">
+  <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+    <div class="sidebar-sticky">
+      <ul class="nav flex-column nav-pills">
 % foreach my $document (@top_level_documents) {
-  <li><a href="/wae15/documents?document_id=<% $document->{"document_id"} %>"><% $document->{"title"} %></a></li>
-  <& /wae15/shared/second_level_documents.mi,
-    children => $document->{"children"}
-  &>
+  <li class="nav-item">
+      <a class="nav-link" href="/wae15/documents?document_id=<% $document->{"document_id"} %>"><% $document->{"title"} %></a>
+      <& /wae15/shared/second_level_documents.mi,
+        children => $document->{"children"}
+      &>
+  </li>
 % }
-</ul>
+      </ul>
+    </div>
+  </nav>
+  <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+    <!-- Main content goes here -->
+    <p>TODO(raoul): We've got the document hierarchy, now we just need to make it functional and maybe pretty.</p>
+  </main>
+</div>

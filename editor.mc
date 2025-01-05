@@ -2,7 +2,7 @@
   has 'document_id';
   has 'fk_parent_id';
   has 'title';
-  has 'content' => (default => "<font face=Verdana>Bitte hier den Text eingeben.\n</font>\n");
+  has 'content' => (default => "<font face=Verdana>Please enter text here.\n</font>\n");
   has 'save';
   has 'insert' => (default => 0);
 </%class>
@@ -20,7 +20,8 @@ my $dbh = Ws24::DBI->dbh();
 my $cgi = new CGI;
 
 my $msg = "Welcome to the WCM content editor.";
-my %docTitleAndIds = ('0', 'top level document');
+my %docTitleAndIds = ('0', 'Top Level Document');
+my %originalText = "Original text";
 
 # Fetch all documents.
 my $documents = $m->comp("/wae15/shared/db_access.mi",
@@ -43,7 +44,7 @@ if ($.save) {
         fk_parent_id => $.fk_parent_id || undef
       }
     );
-    $msg = "Datensatz " . $new_document_id . " neu in DB aufgenommen.";
+    $msg = "Article " . $new_document_id . " saved in the DB successfully.";
 
     # Redirect to the article after creating it.
     $m->redirect('/wae15/documents?document_id='. $new_document_id);
@@ -53,7 +54,7 @@ if ($.save) {
   # Datensatz in Datenbank �ndern
     my $sth = $dbh->prepare("UPDATE group15_documents SET content = ?, title = ?, fk_parent_id = ? WHERE document_id = ?");
     $sth->execute($.content,$.title,$.fk_parent_id || undef,$.document_id);
-    $msg = "Datensatz " . $.document_id ." in DB ver&auml;ndert.".$sth->rows();
+    $msg = "Article " . $.document_id ." updated in the DB successfully. (".$sth->rows() . ")";
 
     # Redirect to the article after updating it.
     # Note: This is commented out because it redirects instantly after saving.
@@ -67,7 +68,7 @@ if ($.save) {
   $.content($res->{content} || $.content);
   $.title($res->{title});
   $.fk_parent_id($res->{fk_parent_id});
-  $msg = "Datensatz " . $.document_id . " aus DB gelesen.".((defined($res) && scalar(keys(%$res)))?1:0);
+  $msg = "Article " . $.document_id . " loaded from the DB.";
 
 } else {
 # keine ID, neues Dokument erstellen
@@ -81,9 +82,9 @@ if ($.save) {
 </%init>
 
 <%perl>
-my $page_title = "Neues Dokument anlegen";
+my $page_title = "Create a New Article";
 if (defined($.document_id) && $.insert == 0) {
-  $page_title = "Dokument " . $.document_id . " editieren";
+  $page_title = "Edit Document No. " . $.document_id;
 }
 </%perl>
 
@@ -118,11 +119,11 @@ if (defined($.document_id) && $.insert == 0) {
       </div class>
 % if (length($docTitleAndIds{$.fk_parent_id})) {
   <div class="form-group mb-3 alert alert-info" role="alert">
-        <span>Aktuell: <% $docTitleAndIds{$.fk_parent_id} %></span>
+        <span>Currently: <% $docTitleAndIds{$.fk_parent_id} %></span>
   </div>
 % } else {
   <div class="alert alert-info" role="alert">
-    <span>Neues Dokument wird unter dem aktuellen Dokument (Parent ID) angelegt.</span>
+    <span>New article will be saved under the current article (Parent ID).</span>
   </div>
 % }
       <div class="form-group mb-3">
@@ -137,10 +138,10 @@ if (defined($.document_id) && $.insert == 0) {
       </script>
       <div class="form-group col-md-8 mb-3 mx-auto">
         <div class="row mb-1">
-        <input class="btn btn-primary" type="submit" value="&Auml;nderungen speichern" name="save">
+        <input class="btn btn-primary" type="submit" value="Save Changes" name="save">
         </div>
         <div class="row">
-          <input class="btn btn-danger" type="reset" value="&Auml;nderungen verwerfen" name="Cancel"> <!-- onClick="window.close()" -->
+          <input class="btn btn-danger" type="reset" value="Cancel Changes" name="Cancel" onClick="CKEDITOR.instances.content.setData(<% %originalText %>, function() { this.updateElement(); } )"> <!-- onClick="window.close()" -->
         </div>
       </div>
     </form>
