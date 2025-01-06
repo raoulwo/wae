@@ -40,11 +40,11 @@ if ($.delete) {
     <div class="card-footer">
 % if( defined $m->session->{user_id} ) {
   <div class="d-flex justify-content-end align-items-center">
-  <a class="btn btn-primary active mb-3" href="/wae15/editor?document_id=<% $document->{"document_id"} %>">Edit document</a>
+  <a class="btn btn-primary active mb-3 mr-2" href="/wae15/editor?document_id=<% $document->{"document_id"} %>">Edit document</a>
 
   <form name="deleteform" method="post">
     <input type="hidden" name="document_id" value="<% $.document_id %>">
-    <input type="submit" name="delete" value="Delete document" class="btn btn-dark">
+    <input type="submit" name="delete" value="Delete document" class="btn btn-dark mr-2">
   </form>
   </div>
 % } else {
