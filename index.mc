@@ -46,6 +46,9 @@ foreach my $document (values %document_hierarchy) {
 # Sort top-level documents alphabetically by title
 @top_level_documents = sort { lc($a->{"title"}) cmp lc($b->{"title"}) } @top_level_documents;
 
+# Sort all documents by date added (created_at)
+@$documents = sort { $b->{"created_at"} cmp $a->{"created_at"} } @$documents;
+
 </%init>
 
 <div class="d-flex">
@@ -57,10 +60,12 @@ foreach my $document (values %document_hierarchy) {
     <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><% $document->{"title"} %></a>
     <div class="dropdown-menu">
       <a class="dropdown-item" href="/wae15/documents?document_id=<% $document->{"document_id"} %>"><% $document->{"title"} %></a>
-      <div class="dropdown-divider"></div>
+% if (@{$document->{"children"}} > 0) {   
+   <div class="dropdown-divider"></div>
       <& /wae15/shared/second_level_documents.mi,
         children => $document->{"children"}
       &>
+% }
     </div>
   </li>
 % }
@@ -69,7 +74,25 @@ foreach my $document (values %document_hierarchy) {
   </nav>
   <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
     <!-- Main content goes here -->
-    <p>TODO(raoul): We've got the document hierarchy, now we just need to make it functional and maybe pretty.</p>
+    <div class="row justify-content-center">
+    <div class="document-preview col-md-8">
+% foreach my $document (@$documents) {
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5><a href="/wae15/documents?document_id=<% $document->{"document_id"} %>"><% $document->{"title"} %></a></h5>
+          <hr>
+          <p class="card-text">
+% my $text_content = $document->{"content"};
+% $text_content =~ s/<[^>]*>//g; # Remove HTML tags
+% my @lines = split /\n/, $text_content;
+% my $preview = join "\n", @lines[0..1];
+<% $preview %> ...
+        </p>
+        </div>
+</div>
+% }
+    </div>
+    </div>
   </main>
 </div>
 
