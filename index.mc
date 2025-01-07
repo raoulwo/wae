@@ -81,7 +81,7 @@ foreach my $document (values %document_hierarchy) {
         <div class="card-body">
           <h5><a href="/wae15/documents?document_id=<% $document->{"document_id"} %>"><% $document->{"title"} %></a></h5>
           <hr>
-          <p class="card-text">
+          <p class="card-text text-truncate-max-height">
 % my $text_content = $document->{"content"};
 % $text_content =~ s/<[^>]*>//g; # Remove HTML tags
 % my @lines = split /\n/, $text_content;
